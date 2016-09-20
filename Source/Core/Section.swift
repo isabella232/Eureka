@@ -44,7 +44,7 @@ extension Section : Hidable, SectionDelegate {}
 
 extension Section {
     
-    public func reload(_ rowAnimation: UITableViewRowAnimation = .none) {
+    public func reload(with rowAnimation: UITableViewRowAnimation = .none) {
         guard let tableView = (form?.delegate as? FormViewController)?.tableView, let index = index else { return }
         tableView.reloadSections(IndexSet(integer: index), with: rowAnimation)
     }
@@ -220,7 +220,7 @@ extension Section : MutableCollection, BidirectionalCollection {
     }
 
     public subscript (range: Range<Int>) -> [BaseRow] {
-        get { return kvoWrapper.rows.objects(at: NSIndexSet(indexesIn: NSRange(range)) as IndexSet) as! [BaseRow] }
+        get { return kvoWrapper.rows.objects(at: IndexSet(integersIn: range)) as! [BaseRow] }
         set { kvoWrapper.rows.replaceObjects(in: NSRange(range), withObjectsFrom: newValue) }
     }
 
@@ -236,14 +236,14 @@ extension Section : RangeReplaceableCollection {
     public func append(_ formRow: BaseRow){
         kvoWrapper.rows.insert(formRow, at: kvoWrapper.rows.count)
         kvoWrapper._allRows.append(formRow)
-        formRow.wasAddedToFormInSection(self)
+        formRow.wasAddedTo(section: self)
     }
     
     public func append<S : Sequence>(contentsOf newElements: S) where S.Iterator.Element == BaseRow {
         kvoWrapper.rows.addObjects(from: newElements.map { $0 })
         kvoWrapper._allRows.append(contentsOf: newElements)
         for row in newElements{
-            row.wasAddedToFormInSection(self)
+            row.wasAddedTo(section: self)
         }
     }
     
@@ -260,7 +260,7 @@ extension Section : RangeReplaceableCollection {
         
         kvoWrapper._allRows.insert(contentsOf: newElements, at: indexForInsertionAtIndex(subRange.lowerBound))
         for row in newElements{
-            row.wasAddedToFormInSection(self)
+            row.wasAddedTo(section: self)
         }
     }
     
@@ -291,7 +291,7 @@ extension Section /* Condition */{
     /**
      Function that evaluates if the section should be hidden and updates it accordingly.
      */
-    public func evaluateHidden(){
+    public final func evaluateHidden(){
         if let h = hidden, let f = form {
             switch h {
             case .function(_ , let callback):
@@ -311,12 +311,12 @@ extension Section /* Condition */{
     /**
      Internal function called when this section was added to a form.
      */
-    func wasAddedToForm(_ form: Form) {
+    func wasAddedTo(form: Form) {
         self.form = form
         addToRowObservers()
         evaluateHidden()
         for row in kvoWrapper._allRows {
-            row.wasAddedToFormInSection(self)
+            row.wasAddedTo(section: self)
         }
     }
     
@@ -327,9 +327,9 @@ extension Section /* Condition */{
         guard let h = hidden else { return }
         switch h {
         case .function(let tags, _):
-            form?.addRowObservers(self, rowTags: tags, type: .hidden)
+            form?.addRowObservers(to: self, rowTags: tags, type: .hidden)
         case .predicate(let predicate):
-            form?.addRowObservers(self, rowTags: predicate.predicateVars, type: .hidden)
+            form?.addRowObservers(to: self, rowTags: predicate.predicateVars, type: .hidden)
         }
     }
     
@@ -351,9 +351,9 @@ extension Section /* Condition */{
         guard let h = hidden else { return }
         switch h {
         case .function(let tags, _):
-            form?.removeRowObservers(self, rows: tags, type: .hidden)
+            form?.removeRowObservers(from: self, rowTags: tags, type: .hidden)
         case .predicate(let predicate):
-            form?.removeRowObservers(self, rows: predicate.predicateVars, type: .hidden)
+            form?.removeRowObservers(from: self, rowTags: predicate.predicateVars, type: .hidden)
         }
     }
     

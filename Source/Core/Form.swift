@@ -34,7 +34,7 @@ public protocol FormDelegate : class {
     func rowsHaveBeenAdded(_ rows: [BaseRow], at:[IndexPath])
     func rowsHaveBeenRemoved(_ rows: [BaseRow], at:[IndexPath])
     func rowsHaveBeenReplaced(oldRows:[BaseRow], newRows: [BaseRow], at: [IndexPath])
-    func rowValueHasBeenChanged(_ row: BaseRow, oldValue: Any?, newValue: Any?)
+    func valueHasBeenChanged(for: BaseRow, oldValue: Any?, newValue: Any?)
 }
 
 
@@ -67,7 +67,7 @@ public final class Form {
      Returns the row at the given indexPath
      */
     public subscript(indexPath: IndexPath) -> BaseRow {
-        return self[(indexPath as NSIndexPath).section][(indexPath as NSIndexPath).row]
+        return self[indexPath.section][indexPath.row]
     }
     
     /**
@@ -197,14 +197,14 @@ extension Form : RangeReplaceableCollection {
     public func append(_ formSection: Section){
         kvoWrapper.sections.insert(formSection, at: kvoWrapper.sections.count)
         kvoWrapper._allSections.append(formSection)
-        formSection.wasAddedToForm(self)
+        formSection.wasAddedTo(form: self)
     }
     
     public func append<S : Sequence>(contentsOf newElements: S) where S.Iterator.Element == Section {
         kvoWrapper.sections.addObjects(from: newElements.map { $0 })
         kvoWrapper._allSections.append(contentsOf: newElements)
         for section in newElements{
-            section.wasAddedToForm(self)
+            section.wasAddedTo(form: self)
         }
     }
     
@@ -221,7 +221,7 @@ extension Form : RangeReplaceableCollection {
         kvoWrapper._allSections.insert(contentsOf: newElements, at: indexForInsertionAtIndex(subRange.lowerBound))
         
         for section in newElements{
-            section.wasAddedToForm(self)
+            section.wasAddedTo(form: self)
         }
     }
     
@@ -293,7 +293,7 @@ extension Form {
         return tagToValues
     }
     
-    func addRowObservers(_ taggable: Taggable, rowTags: [String], type: ConditionType) {
+    func addRowObservers(to taggable: Taggable, rowTags: [String], type: ConditionType) {
         for rowTag in rowTags{
             if rowObservers[rowTag] == nil {
                 rowObservers[rowTag] = Dictionary()
@@ -309,23 +309,23 @@ extension Form {
         }
     }
     
-    func removeRowObservers(_ taggable: Taggable, rows: [String], type: ConditionType) {
-        for row in rows{
-            guard var arr = rowObservers[row]?[type], let index = arr.index(where: { $0 === taggable }) else { continue }
+    func removeRowObservers(from taggable: Taggable, rowTags: [String], type: ConditionType) {
+        for rowTag in rowTags{
+            guard var arr = rowObservers[rowTag]?[type], let index = arr.index(where: { $0 === taggable }) else { continue }
             arr.remove(at: index)
         }
     }
     
-    func nextRowForRow(_ currentRow: BaseRow) -> BaseRow? {
+    func nextRow(for row: BaseRow) -> BaseRow? {
         let allRows = rows
-        guard let index = allRows.index(of: currentRow) else { return nil }
+        guard let index = allRows.index(of: row) else { return nil }
         guard index < allRows.count - 1 else { return nil }
         return allRows[index + 1]
     }
     
-    func previousRowForRow(_ currentRow: BaseRow) -> BaseRow? {
+    func previousRow(for row: BaseRow) -> BaseRow? {
         let allRows = rows
-        guard let index = allRows.index(of: currentRow) else { return nil }
+        guard let index = allRows.index(of: row) else { return nil }
         guard index > 0 else { return nil }
         return allRows[index - 1]
     }

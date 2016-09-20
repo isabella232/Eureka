@@ -46,55 +46,55 @@ class HomeViewController : FormViewController {
         
                 <<< ButtonRow("Rows") {
                         $0.title = $0.tag
-                        $0.presentationMode = .segueName(segueName: "RowsExampleViewControllerSegue", completionCallback: nil)
+                        $0.presentationMode = .segueName(segueName: "RowsExampleViewControllerSegue", completion: nil)
                     }
             
                 <<< ButtonRow("Native iOS Event Form") { row in
                         row.title = row.tag
-                        row.presentationMode = .segueName(segueName: "NativeEventsFormNavigationControllerSegue", completionCallback:{  vc in vc.dismiss(animated: true) })
+                        row.presentationMode = .segueName(segueName: "NativeEventsFormNavigationControllerSegue", completion:{  vc in vc.dismiss(animated: true) })
                     }
             
                 <<< ButtonRow("Accesory View Navigation") { (row: ButtonRow) in
                         row.title = row.tag
-                        row.presentationMode = .segueName(segueName: "AccesoryViewControllerSegue", completionCallback: nil)
+                        row.presentationMode = .segueName(segueName: "AccesoryViewControllerSegue", completion: nil)
                     }
             
                 <<< ButtonRow("Custom Cells") { (row: ButtonRow) -> () in
                         row.title = row.tag
-                        row.presentationMode = .segueName(segueName: "CustomCellsControllerSegue", completionCallback: nil)
+                        row.presentationMode = .segueName(segueName: "CustomCellsControllerSegue", completion: nil)
                     }
             
                 <<< ButtonRow("Customization of rows with text input") { (row: ButtonRow) -> Void in
                         row.title = row.tag
-                        row.presentationMode = .segueName(segueName: "FieldCustomizationControllerSegue", completionCallback: nil)
+                        row.presentationMode = .segueName(segueName: "FieldCustomizationControllerSegue", completion: nil)
                     }
             
                 <<< ButtonRow("Hidden rows") { (row: ButtonRow) -> Void in
                     row.title = row.tag
-                    row.presentationMode = .segueName(segueName: "HiddenRowsControllerSegue", completionCallback: nil)
+                    row.presentationMode = .segueName(segueName: "HiddenRowsControllerSegue", completion: nil)
                     }
             
                 <<< ButtonRow("Disabled rows") { (row: ButtonRow) -> Void in
                     row.title = row.tag
-                    row.presentationMode = .segueName(segueName: "DisabledRowsControllerSegue", completionCallback: nil)
+                    row.presentationMode = .segueName(segueName: "DisabledRowsControllerSegue", completion: nil)
                 }
             
                 <<< ButtonRow("Formatters") { (row: ButtonRow) -> Void in
                     row.title = row.tag
-                    row.presentationMode = .segueName(segueName: "FormattersControllerSegue", completionCallback: nil)
+                    row.presentationMode = .segueName(segueName: "FormattersControllerSegue", completion: nil)
                 }
         
                 <<< ButtonRow("Inline rows") { (row: ButtonRow) -> Void in
                     row.title = row.tag
-                    row.presentationMode = .segueName(segueName: "InlineRowsControllerSegue", completionCallback: nil)
+                    row.presentationMode = .segueName(segueName: "InlineRowsControllerSegue", completion: nil)
                 }
                 <<< ButtonRow("List Sections") { (row: ButtonRow) -> Void in
                     row.title = row.tag
-                    row.presentationMode = .segueName(segueName: "ListSectionsControllerSegue", completionCallback: nil)
+                    row.presentationMode = .segueName(segueName: "ListSectionsControllerSegue", completion: nil)
                 }
                 <<< ButtonRow("Validations") { (row: ButtonRow) -> Void in
                     row.title = row.tag
-                    row.presentationMode = .segueName(segueName: "ValidationsControllerSegue", completionCallback: nil)
+                    row.presentationMode = .segueName(segueName: "ValidationsControllerSegue", completion: nil)
                 }
         +++ Section()
                 <<< ButtonRow() { (row: ButtonRow) -> Void in
@@ -668,8 +668,8 @@ class NativeEventFormViewController : FormViewController {
             }
             .onChange { [weak self] row in
                 if row.value == .Never {
-                    if let second : PushRow<EventAlert> = self?.form.rowBy(tag: "Another Alert"), let secondIndexPath = second.indexPath() {
-                        row.section?.remove(at: (secondIndexPath as NSIndexPath).row)
+                    if let second : PushRow<EventAlert> = self?.form.rowBy(tag: "Another Alert"), let secondIndexPath = second.indexPath {
+                        row.section?.remove(at: secondIndexPath.row)
                     }
                 }
                 else{
@@ -679,7 +679,7 @@ class NativeEventFormViewController : FormViewController {
                             $0.value = .Never
                             $0.options = EventAlert.allValues
                         }
-                        row.section?.insert(second, at: (row.indexPath()! as NSIndexPath).row + 1)
+                        row.section?.insert(second, at: row.indexPath!.row + 1)
                         return
                     }
                 }
@@ -1010,7 +1010,7 @@ class InlineRowsController: FormViewController {
                     var dateComp = DateComponents()
                     dateComp.hour = 18
                     dateComp.minute = 33
-                    (dateComp as NSDateComponents).timeZone = TimeZone.current
+                    dateComp.timeZone = TimeZone.current
                     $0.value = Calendar.current.date(from: dateComp)
                 }
         
@@ -1168,7 +1168,7 @@ class ValidationsController: FormViewController {
                         }
                     }
                     .onRowValidationChanged { cell, row in
-                        let rowIndex = row.indexPath()!.row
+                        let rowIndex = row.indexPath!.row
                         while row.section!.count > rowIndex + 1 && row.section?[rowIndex  + 1] is LabelRow {
                             row.section?.remove(at: rowIndex + 1)
                         }
@@ -1178,7 +1178,7 @@ class ValidationsController: FormViewController {
                                     $0.title = validationMsg
                                     $0.cell.height = { 30 }
                                 }
-                                row.section?.insert(labelRow, at: row.indexPath()!.row + index + 1)
+                                row.section?.insert(labelRow, at: row.indexPath!.row + index + 1)
                             }
                         }
                     }
@@ -1197,7 +1197,7 @@ class ValidationsController: FormViewController {
                         }
                     }
                     .onRowValidationChanged { cell, row in
-                        let rowIndex = row.indexPath()!.row
+                        let rowIndex = row.indexPath!.row
                         while row.section!.count > rowIndex + 1 && row.section?[rowIndex  + 1] is LabelRow {
                             row.section?.remove(at: rowIndex + 1)
                         }
@@ -1207,7 +1207,7 @@ class ValidationsController: FormViewController {
                                     $0.title = validationMsg
                                     $0.cell.height = { 30 }
                                 }
-                                row.section?.insert(labelRow, at: row.indexPath()!.row + index + 1)
+                                row.section?.insert(labelRow, at: row.indexPath!.row + index + 1)
                             }
                         }
                     }
@@ -1225,7 +1225,7 @@ class ValidationsController: FormViewController {
                             }
                     }
                     .onRowValidationChanged { cell, row in
-                        let rowIndex = row.indexPath()!.row
+                        let rowIndex = row.indexPath!.row
                         while row.section!.count > rowIndex + 1 && row.section?[rowIndex  + 1] is LabelRow {
                             row.section?.remove(at: rowIndex + 1)
                         }
@@ -1235,7 +1235,7 @@ class ValidationsController: FormViewController {
                                     $0.title = validationMsg
                                     $0.cell.height = { 30 }
                                 }
-                                row.section?.insert(labelRow, at: row.indexPath()!.row + index + 1)
+                                row.section?.insert(labelRow, at: row.indexPath!.row + index + 1)
                             }
                         }
                     }
@@ -1252,7 +1252,7 @@ class ValidationsController: FormViewController {
                             }
                     }
                     .onRowValidationChanged { cell, row in
-                        let rowIndex = row.indexPath()!.row
+                        let rowIndex = row.indexPath!.row
                         while row.section!.count > rowIndex + 1 && row.section?[rowIndex  + 1] is LabelRow {
                             row.section?.remove(at: rowIndex + 1)
                         }
@@ -1262,7 +1262,7 @@ class ValidationsController: FormViewController {
                                     $0.title = validationMsg
                                     $0.cell.height = { 30 }
                                 }
-                                row.section?.insert(labelRow, at: row.indexPath()!.row + index + 1)
+                                row.section?.insert(labelRow, at: row.indexPath!.row + index + 1)
                             }
                         }
                     }
@@ -1280,7 +1280,7 @@ class ValidationsController: FormViewController {
                             }
                         }
                         .onRowValidationChanged { cell, row in
-                            let rowIndex = row.indexPath()!.row
+                            let rowIndex = row.indexPath!.row
                             while row.section!.count > rowIndex + 1 && row.section?[rowIndex  + 1] is LabelRow {
                                 row.section?.remove(at: rowIndex + 1)
                             }
@@ -1290,7 +1290,7 @@ class ValidationsController: FormViewController {
                                         $0.title = validationMsg
                                         $0.cell.height = { 30 }
                                     }
-                                    row.section?.insert(labelRow, at: row.indexPath()!.row + index + 1)
+                                    row.section?.insert(labelRow, at: row.indexPath!.row + index + 1)
                                 }
                             }
                         }

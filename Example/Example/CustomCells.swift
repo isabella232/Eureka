@@ -184,7 +184,7 @@ public class _FloatLabelCell<T>: Cell<T>, UITextFieldDelegate, TextFieldCell whe
         return !row.isDisabled && floatLabelTextField.canBecomeFirstResponder
     }
     
-    open override func cellBecomeFirstResponder(_ direction: Direction) -> Bool {
+    open override func cellBecomeFirstResponder(withDirection direction: Direction) -> Bool {
         return floatLabelTextField.becomeFirstResponder()
     }
     
@@ -245,7 +245,7 @@ public class _FloatLabelCell<T>: Cell<T>, UITextFieldDelegate, TextFieldCell whe
     private func displayValue(useFormatter: Bool) -> String? {
         guard let v = row.value else { return nil }
         if let formatter = (row as? FormatterConformance)?.formatter, useFormatter {
-            return textField.isFirstResponder ? formatter.editingString(for: v as AnyObject) : formatter.string(for: v as AnyObject)
+            return textField.isFirstResponder ? formatter.editingString(for: v) : formatter.string(for: v)
         }
         return String(describing: v)
     }
@@ -508,7 +508,7 @@ public final class EmailFloatLabelRow: FloatFieldRow<EmailFloatLabelCell>, RowTy
 public final class LocationRow : SelectorRow<PushSelectorCell<CLLocation>, MapViewController>, RowType {
     public required init(tag: String?) {
         super.init(tag: tag)
-        presentationMode = .show(controllerProvider: ControllerProvider.callback { return MapViewController(){ _ in } }, completionCallback: { vc in _ = vc.navigationController?.popViewController(animated: true) })
+        presentationMode = .show(controllerProvider: ControllerProvider.callback { return MapViewController(){ _ in } }, completion: { vc in _ = vc.navigationController?.popViewController(animated: true) })
         
         displayValueFor = {
             guard let location = $0 else { return "" }
@@ -529,7 +529,7 @@ public class MapViewController : UIViewController, TypedRowControllerType, MKMap
     
     lazy var mapView : MKMapView = { [unowned self] in
         let v = MKMapView(frame: self.view.bounds)
-        v.autoresizingMask = UIViewAutoresizing.flexibleWidth.union(UIViewAutoresizing.flexibleHeight)
+        v.autoresizingMask = UIViewAutoresizing.flexibleWidth.union(.flexibleHeight)
         return v
         }()
     

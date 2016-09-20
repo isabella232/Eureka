@@ -32,7 +32,7 @@ open class RowOf<T: Equatable>: BaseRow {
             guard _value != oldValue else { return }
             guard let form = section?.form else { return }
             if let delegate = form.delegate {
-                delegate.rowValueHasBeenChanged(self, oldValue: oldValue, newValue: value)
+                delegate.valueHasBeenChanged(for: self, oldValue: oldValue, newValue: value)
                 callbackOnChange?()
             }
             guard let t = tag else { return }
