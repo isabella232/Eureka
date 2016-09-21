@@ -822,7 +822,7 @@ extension FormViewController {
     /**
     Called when the keyboard will appear. Adjusts insets of the tableView and scrolls it if necessary.
     */
-    public func keyboardWillShow(_ notification: Notification){
+    open func keyboardWillShow(_ notification: Notification){
         guard let table = tableView, let cell = table.findFirstResponder()?.formCell() else { return }
         let keyBoardInfo = notification.userInfo!
         let endFrame = keyBoardInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue
@@ -850,7 +850,7 @@ extension FormViewController {
     /**
      Called when the keyboard will disappear. Adjusts insets of the tableView.
      */
-    public func keyboardWillHide(_ notification: Notification){
+    open func keyboardWillHide(_ notification: Notification){
         guard let table = tableView,  let oldBottom = oldBottomInset else  { return }
         let keyBoardInfo = notification.userInfo!
         var tableInsets = table.contentInset
